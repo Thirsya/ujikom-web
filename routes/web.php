@@ -22,3 +22,4 @@ Route::get('/', function () {
 
 Route::resource('kategori', KategoriController::class);
 Route::resource('surat', SuratController::class);
+Route::get('arsip-surat/download/{id}', [SuratController::class, 'download'])->name('surat.download');

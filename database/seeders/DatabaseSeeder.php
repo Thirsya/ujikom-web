@@ -12,7 +12,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([KategoriSeeder::class, SuratSeeder::class]);
-
+        $this->call([KategoriSeeder::class]);
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateSuratRequest;
 use App\Imports\SuratsImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SuratController extends Controller
@@ -16,68 +17,96 @@ class SuratController extends Controller
 
     public function index(Request $request)
     {
-        $surat = Surat::with('kategori')->paginate(20);
+        $query = Surat::with('kategori');
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('no_surat', 'like', '%' . $search . '%')
+                ->orWhere('judul', 'like', '%' . $search . '%');
+        }
+
+        $surat = $query->paginate(10);
+
         return view('arsip-surat.surat')->with([
             'surat' => $surat,
         ]);
     }
 
+
     public function create()
     {
         $surat = Surat::all();
-        return view('arsip-surat.create-surat')->with(['$surat' => $surat]);
+        $kategori = Kategori::all();
+        return view('arsip-surat.create-surat')->with(['$surat' => $surat, 'kategori' => $kategori]);
     }
 
-    // public function store(StoreKelurahanRequest $request)
-    // {
-    //     Kelurahan::create([
-    //         'kelurahan' => $request->kelurahan,
-    //         'id_kecamatan' => $request->id_kecamatan,
-    //     ]);
+    public function store(StoreSuratRequest $request)
+    {
+        $data = $request->validated();
+        $data['waktu'] = now();
 
-    //     return redirect()->route('kelurahan.index')
-    //         ->with('success', 'Kelurahan created successfully.');
-    // }
+        if ($request->hasFile('file_surat')) {
+            $data['file_surat'] = $request->file('file_surat')->store('file_surat', 'public');
+        }
+
+        Surat::create($data);
+
+        return redirect()->route('surat.index')->with('success', 'Surat berhasil disimpan.');
+    }
+
 
     public function show(Surat $surat)
     {
-        $surat = Surat::findOrFail($surat);
-        return view('arsip-surat.show-surat', compact('surat'));
+        //Tidak Dipakai
     }
 
-    // public function edit(Kelurahan $kelurahan)
-    // {
-    //     $kecamatans = Kecamatan::all();
-    //     return view('master data.kelurahan.edit')->with(
-    //         [
-    //             'kelurahan' => $kelurahan,
-    //             'kecamatans' => $kecamatans
-    //         ]
-    //     );
-    // }
+    public function edit($id)
+    {
+        $arsipSurat = Surat::findOrFail($id);
+        $kategoriSurat = Kategori::all();
+        return view('arsip-surat.edit-surat', compact('arsipSurat', 'kategoriSurat'));
+    }
 
-    // public function update(UpdateKelurahanRequest $request, Kelurahan $kelurahan)
-    // {
-    //     $kelurahan->update($request->all());
+    public function update(UpdateSuratRequest $request, $id)
+    {
+        $arsipSurat = Surat::findOrFail($id);
 
-    //     return redirect()->route('kelurahan.index')
-    //         ->with('success', 'Kelurahan updated successfully.');
-    // }
+        if ($request->hasFile('file_surat')) {
+            // Hapus file lama jika ada
+            if ($arsipSurat->file_surat && Storage::disk('public')->exists($arsipSurat->file_surat)) {
+                Storage::disk('public')->delete($arsipSurat->file_surat);
+            }
+            // Simpan file baru
+            $arsipSurat->file_surat = $request->file('file_surat')->store('arsip_surat', 'public');
+        }
 
-    // public function destroy(Kelurahan $kelurahan)
-    // {
-    //     try {
-    //         $kelurahan->forceDelete();
-    //         return redirect()->route('kelurahan.index')->with('success', 'Hapus Data Kelurahan Sukses');
-    //     } catch (\Illuminate\Database\QueryException $e) {
-    //         $error_code = $e->errorInfo[1];
-    //         if ($error_code == 1451) {
-    //             return redirect()->route('kelurahan.index')
-    //                 ->with('error', 'Tidak Dapat Menghapus Kelurahan Yang Masih Digunakan Oleh Kolom Lain');
-    //         } else {
-    //             return redirect()->route('kelurahan.index')->with('success', 'Hapus Data Kelurahan Sukses');
-    //         }
-    //     }
-    // }
+        $arsipSurat->save();
 
+        return redirect()->route('surat.index')
+            ->with('success', 'Arsip surat berhasil diperbarui.');
+    }
+
+    public function download($id)
+    {
+        $arsipSurat = Surat::findOrFail($id);
+        $filePath = storage_path('app/public/' . $arsipSurat->file_surat);
+
+        return response()->download($filePath);
+    }
+
+    public function destroy($id)
+    {
+        $arsipSurat = Surat::findOrFail($id);
+
+        // Hapus file dari storage jika ada
+        if ($arsipSurat->file_surat && Storage::disk('public')->exists($arsipSurat->file_surat)) {
+            Storage::disk('public')->delete($arsipSurat->file_surat);
+        }
+
+        // Hapus entri dari database
+        $arsipSurat->delete();
+
+        return redirect()->route('surat.index')
+            ->with('success', 'Data surat berhasil dihapus.');
+    }
 }

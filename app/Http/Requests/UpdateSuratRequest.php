@@ -6,11 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSuratRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;
@@ -18,17 +13,16 @@ class UpdateSuratRequest extends FormRequest
 
     public function rules()
     {
-        $id = $this->route('surat')->id;
         return [
-            'no_surat' => 'required|unique:surat,surat' . $id
+            'file_surat' => 'nullable|file|mimes:pdf',
         ];
     }
 
     public function messages()
     {
         return [
-            'no_surat.required' => 'surat Wajib Diisi',
-            'no_surat.unique' => 'surat Sudah Ada',
+            'file_surat.file' => 'File surat harus berupa file',
+            'file_surat.mimes' => 'File surat harus berupa file pdf.',
         ];
     }
 }

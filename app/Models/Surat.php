@@ -8,11 +8,11 @@ class Surat extends Model
 {
     protected $table = 'surat';
     protected $fillable = [
-        'no_surat', 'id_kategori', 'judul', 'waktu'
+        'no_surat', 'id_kategori', 'judul', 'waktu', 'file_surat'
     ];
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class,'id_kategori');
+        return $this->belongsTo(Kategori::class, 'id_kategori');
     }
 }
