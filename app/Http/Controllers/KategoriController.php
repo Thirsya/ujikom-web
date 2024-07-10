@@ -12,7 +12,7 @@ class KategoriController extends Controller
     public function index(Request $request)
     {
         $kategori = Kategori::paginate(20);
-        return view('kategori')->with([
+        return view('kategori-surat.kategori')->with([
             'kategori' => $kategori,
         ]);
     }
@@ -20,7 +20,7 @@ class KategoriController extends Controller
     public function create()
     {
         $kategori = Kategori::all();
-        return view('create-kategori')->with(['$kategori' => $kategori]);
+        return view('kategori-surat.create-kategori')->with(['$kategori' => $kategori]);
     }
 
     public function store(StoreKategoriRequest $request)
@@ -48,7 +48,7 @@ class KategoriController extends Controller
     public function edit(Kategori $kategori)
     {
         $kategori = Kategori::find($kategori);
-        return view('kategori-edit', ['kategori' => $kategori]);
+        return view('kategori-surat.edit-kategori', ['kategori' => $kategori]);
     }
 
     public function update(UpdateKategoriRequest $request, Kategori $kategori)

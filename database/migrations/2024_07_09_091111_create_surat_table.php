@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_kategori');
             $table->string('no_surat');
             $table->string('judul');
-            $table->string('file_surat');
+            $table->string('file_surat')->nullable();
             $table->dateTime('waktu');
             $table->foreign('id_kategori')->references('id')->on('kategori')->restrictOnDelete();
             $table->timestamps();

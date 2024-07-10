@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('surat');
+    return redirect()->route('surat.index');
 })->name('surat-page');
 
 Route::resource('kategori', KategoriController::class);

@@ -17,7 +17,7 @@ class SuratController extends Controller
     public function index(Request $request)
     {
         $surat = Surat::with('kategori')->paginate(20);
-        return view('surat')->with([
+        return view('arsip-surat.surat')->with([
             'surat' => $surat,
         ]);
     }
@@ -25,7 +25,7 @@ class SuratController extends Controller
     public function create()
     {
         $surat = Surat::all();
-        return view('create-surat')->with(['$surat' => $surat]);
+        return view('arsip-surat.create-surat')->with(['$surat' => $surat]);
     }
 
     // public function store(StoreKelurahanRequest $request)
@@ -42,7 +42,7 @@ class SuratController extends Controller
     public function show(Surat $surat)
     {
         $surat = Surat::findOrFail($surat);
-        return view('show-surat', compact('surat'));
+        return view('arsip-surat.show-surat', compact('surat'));
     }
 
     // public function edit(Kelurahan $kelurahan)
