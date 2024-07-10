@@ -19,7 +19,8 @@ class StoreKategoriRequest extends FormRequest
     public function rules()
     {
         return [
-            'nama_kategori' => 'required|unique:kategori,kategori|regex:/^[a-zA-Z]+$/u',
+            'nama_kategori' => 'required|unique:kategori,nama_kategori|string',
+            'keterangan' => 'nullable|string',
         ];
     }
 
@@ -28,7 +29,8 @@ class StoreKategoriRequest extends FormRequest
         return [
             'nama_kategori.required' => 'Kategori Wajib Diisi',
             'nama_kategori.unique' => 'Kategori Sudah Ada',
-            'nama_kategori.regex' => 'Kategori tidak boleh karakter @!_?',
+            'nama_kategori.string' => 'Kategori Harus Berupa String',
+            'keterangan.string' => 'Keterangan Harus Berupa String',
         ];
     }
 }

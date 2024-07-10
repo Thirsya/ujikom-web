@@ -9,7 +9,7 @@
                 <br><br>
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('kategori.store') }}" method="post">
+                        <form id="kategoriForm" action="{{ route('kategori.update', $kategori->id) }}" method="post">
                             @csrf
                             @method('PUT')
                             <div class="form-group">
@@ -17,7 +17,7 @@
                                 <input type="text" id="kategori" name="kategori"
                                     class="form-control
                                 @error('kategori') is-invalid @enderror"
-                                    placeholder="Masukan Ktegori" value="{{ old('kategori', $kategori->id_kategori) }}"
+                                    placeholder="Masukan Ktegori" value="{{ old('kategori', $kategori->id) }}"
                                     data-id="input_kategori" autocomplete="off" disabled readonly>
                                 @error('kategori')
                                     <div class="invalid-feedback">
@@ -52,22 +52,51 @@
                                     </div>
                                 @enderror
                             </div>
+                            <div class="card-footer text-right">
+                                <button type="button" id="simpanButton" class="btn btn-primary">Simpan</button>
+                                <a class="btn btn-secondary" id="cancelButton" href="#">Cancel</a>
+                            </div>
                         </form>
                     </div>
-                    <div class="card-footer text-right">
-                        <button class="btn btn-primary">Simpan</button>
-                        <a class="btn btn-secondary" href="{{ route('kategori.index') }}">Cancel</a>
-                    </div>
-                    </form>
                 </div>
             </div>
         </section>
     </div>
 @endsection
-@push('customScript')
-    <script src="/assets/js/select2.min.js"></script>
-@endpush
 
-@push('customStyle')
-    <link rel="stylesheet" href="/assets/css/select2.min.css">
+@push('customScript')
+    <script>
+        document.getElementById('simpanButton').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Data akan disimpan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, simpan!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('kategoriForm').submit();
+                }
+            })
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Anda akan membatalkan perubahan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, batalkan!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{{ route('kategori.index') }}';
+                }
+            })
+        });
+    </script>
 @endpush

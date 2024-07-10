@@ -20,7 +20,8 @@ class UpdateKategoriRequest extends FormRequest
     {
         $id = $this->route('kategori')->id;
         return [
-            'nama_kategori' => 'required|regex:/^[a-zA-Z]+$/u|unique:kategori,kategori,' . $id
+            'nama_kategori' => 'required|string|unique:kategori,nama_kategori,' . $id,
+            'keterangan' => 'nullable|string',
         ];
     }
 
@@ -29,7 +30,8 @@ class UpdateKategoriRequest extends FormRequest
         return [
             'nama_kategori.required' => 'Kategori Wajib Diisi',
             'nama_kategori.unique' => 'Kategori Sudah Ada',
-            'nama_kategori.regex' => 'Kategori tidak boleh karakter @!_?',
+            'nama_kategori.string' => 'Kategori Harus Berupa String',
+            'keterangan.string' => 'Keterangan Harus Berupa String',
         ];
     }
 }
